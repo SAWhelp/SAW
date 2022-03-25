@@ -12,7 +12,7 @@ contract StandAgainstWar is Ownable, ERC1155Supply {
     uint256 public cost;
     uint256 public maxSupply;
     bool public isPaused = false;
-    string public name = "Stand Against War";
+    string public name = "Peace Nightingales";
     address[] public charity;
     bool public revealed=false;
     bool public mintingAllowed;
