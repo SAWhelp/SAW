@@ -13,22 +13,72 @@ contract StandAgainstWar is Ownable, ERC1155Supply {
     uint256 public maxSupply;
     bool public isPaused = false;
     string public name = "Peace Nightingales";
-    address[] public charity;
     bool public revealed=false;
     bool public mintingAllowed;
     uint256 public count=0;
+
+    address[] public charity = [
+    //    //Food for life-
+        0xe26F250ea4d5c20d310910C3e0510156a18c1aFb,
+
+    //    //Care-
+        0xE72b48A4a28Fc2d5e25844e0f73Fe78999BFf997,
+
+    //    //Save the children-
+        0xe40c0E6Afce8B7e2f84671513D9180f2fe016F50,
+
+    //    //Project Hope-
+        0xE842B86Be7105B53432fCce827c265931f2e6074,
+
+    //    //World Central Kitchen-
+        0x488f853bEFdFEe83182a962B1CFA9500Fb2450Df,
+
+    //    //Global Fund for Children-
+        0x8FD49F6Fe537f89D33d1263cfA8210d74A0F8824,
+
+    //    //Danish Refugee Council
+        0x7c37D818cfCC9e57BeA6744F0F584b3f7d937c42,
+
+    //    //Direct Relief-
+        0x7953f82CE89433AaE365BdDdb856fb00C7a1e92C,
+
+    //    //United Way Worldwide-
+        0xcc4E314ce612e6515b2522A11C8ccA1A13d6F177,
+
+    //    //SOS Childrens Villages-
+        0xcB71ae824D5e86B56D2c0aF15f086f3ada93cc22,
+
+    //    //Action AID USA-
+        0x1fcE2A7E198860f34629BcbCaaaA8f2647f8f0D9,
+
+    //    //Alight-
+        0xA622f2e4e47F8d4313Bf9eeB122e3B0010958d12,
+
+    //    //Good360-
+        0x3538AB1D347B7bCe1E55D8FAdC0Afa72489de24A,
+
+    //    //Mercy Corps-
+        0x7A6b6d52244c7dabe860E8CFb79970Eb84260c79,
+
+    //    //Internationasl FUnd For Animal Welfare-
+        0xaa9896b8189f19489B13A80A3C453B705c721209,
+
+    //     //Wonder Foundation-
+        0x33aF47e8315d4Fc2ced3590455CE545ab49f0d8E,
+
+    //  //Committee to Protect Jounalists    
+        0x1Af66BB70d15dbb27928cF1Bd9EF05aD7A21F73B
+    ];
     
 
     constructor(
         uint256 _cost,
         uint256 _maxSupply,
-        address[] memory _charity,
         string memory ipfsURL,
         string memory _ipfsURLFormat
     ) ERC1155(ipfsURL) {
         cost = _cost;
-        maxSupply = _maxSupply;
-        charity = _charity;     
+        maxSupply = _maxSupply;     
         ipfsURLFormat= _ipfsURLFormat;
     }
 
