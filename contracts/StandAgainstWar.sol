@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.7.0 <0.9.0;
+pragma solidity 0.8.1;
 import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
@@ -75,13 +75,17 @@ contract StandAgainstWar is Ownable, ERC1155Supply {
         uint256 _cost,
         uint256 _maxSupply,
         string memory ipfsURL,
-        string memory _ipfsURLFormat
+        string memory _ipfsURLFormat,
+        address _multisigdevWallet
     ) ERC1155(ipfsURL) {
         cost = _cost;
         maxSupply = _maxSupply;     
         ipfsURLFormat= _ipfsURLFormat;
+        devWallet = _multisigdevWallet;
     }
 
+    // multisig dev wallet address
+    address public devWallet;
 
     function _payCharity(uint256 _charityAmount) internal {
         bool success1;
@@ -105,9 +109,7 @@ contract StandAgainstWar is Ownable, ERC1155Supply {
         require(length > 0);
 
         if (msg.sender != owner()) {
-            require(msg.value >= cost * length);
-        // pay 90% of the value to charity and the rest to the deployer
-            
+            require(msg.value == cost * length);            
         }
         _mintBatch(msg.sender, ids, amounts, "");
     }
@@ -119,7 +121,7 @@ contract StandAgainstWar is Ownable, ERC1155Supply {
         uint256 _charity = (amount * 90) / 100 ;
         _payCharity(_charity);
 
-        (bool success2, ) = payable(owner()).call{value: (amount - _charity)}("") ;
+        (bool success2, ) = payable(devWallet).call{value: (amount - _charity)}("") ;
         require(success2);
         
     }
@@ -128,13 +130,24 @@ contract StandAgainstWar is Ownable, ERC1155Supply {
         return address(this).balance;
     }
 
-    function beginMinting() public onlyOwner {
-		mintingAllowed = true;
-	}
+    event mintStatus(bool from, bool changedTo, uint256 timestamp);
+    
+    event priceChanged(uint256 newPrice, uint256 timestamp);
 
-	function pauseMinting() public onlyOwner {
-		mintingAllowed = false;
-	}
+    event setRevealed(bool revealed , uint256 timestamp);
+
+    event setPaused(bool paused, uint256 timestamp);
+
+
+    function beginMinting() public onlyOwner {
+        mintingAllowed = true;
+        emit mintStatus(false, true, block.timestamp);
+    }
+
+    function pauseMinting() public onlyOwner {
+        mintingAllowed = false;
+        emit mintStatus(true, false, block.timestamp);
+    }
 
 
     function uri(uint256 tokenId)
@@ -157,7 +170,6 @@ contract StandAgainstWar is Ownable, ERC1155Supply {
     }
 
 
-
     function setNotReveledUrl(string memory _notRevealedUrl) public onlyOwner{
         notRevealedUri=_notRevealedUrl;
     }
@@ -165,27 +177,17 @@ contract StandAgainstWar is Ownable, ERC1155Supply {
     // Only Owner Functions
     function setIsRevealed(bool _state) public onlyOwner {
          revealed = _state;
+         emit setRevealed(_state, block.timestamp);
     }
 
     function setCost(uint256 _newCost) public onlyOwner {
         cost = _newCost;
-    }
-
-    function setBaseExtension(string memory _newBaseExtension)
-        public
-        onlyOwner
-    {
-        // baseExtension = _newBaseExtension;
+        emit priceChanged(cost, block.timestamp);
     }
 
     function setIsPaused(bool _state) public onlyOwner {
         isPaused = _state;
+        emit setPaused(_state, block.timestamp);
     }
 
-    function withdraw() public payable onlyOwner {
-        (bool success, ) = payable(msg.sender).call{
-            value: address(this).balance
-        }("");
-        require(success);
-    }
 }
